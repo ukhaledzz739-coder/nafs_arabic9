@@ -958,7 +958,7 @@ footer>.wrap>div{line-height:1.9;font-size:13.5px;flex:1 1 320px}
 #ftText .ver{display:inline-block;margin-top:4px;opacity:.75;font-size:12px}
 #ftText .ver a{color:inherit}
 }
-@media print{html.wk #print{zoom:.9;padding:0 12.4mm}}
+@media print{html.wk .sp10{height:0}html.wk .pcard{height:129mm;margin-bottom:3mm}html.wk .pcard.tall{height:258mm}html.wk .cover{height:258mm}html.wk .pcard .act{font-size:calc(var(--fs,12.5pt) * .97)}}
 @media screen and (max-width:640px){
 .grid.g2{grid-template-columns:1fr}
 #sTabs{display:grid;grid-template-columns:1fr 1fr;overflow:visible}
@@ -2268,7 +2268,7 @@ function restore(inp){
 let tt; function toast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('on'); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove('on'),2200); }
 
 /* ================= نسخة المعلم: لغتي الثالث المتوسط — كل البيانات على جهاز المعلم فقط ================= */
-const APPVER = 'د';                  // إصدار نسخة المعلم (يظهر في التذييل)
+const APPVER = 'هـ';                  // إصدار نسخة المعلم (يظهر في التذييل)
 const SKEY = KEY+'-school';          // بيانات المعلم والمدرسة
 const RKEY = KEY+'-roster';          // الشعب والطلاب
 const SDEF = ()=>({name:'', region:'', principal:'', teacher:'', logo:'', secLabels:{}});
@@ -2276,7 +2276,7 @@ let SCHOOL = SDEF();
 let ROSTER = {};   // {g9:{'1':['اسم',...], '2':[...]}}
 let EDSEC = null;  // الشعبة المفتوحة في شاشة الإعداد
 let NOORPICK = null; // شعب ملف نور بانتظار الاختيار
-// طباعة آيفون/آيباد وSafari: تضيف هوامشها الخاصة (نحو ١٤ مم) وتتجاهل هوامش الصفحة، فنصغّر المطبوع قليلًا ليبقى كل نموذج في صفحته
+// طباعة آيفون/آيباد وSafari: تتجاهل هوامش الصفحة وتقتطع أسفلها للتاريخ والرابط، فنُقصّر ارتفاع النماذج ليبقى كل نموذج في صفحته
 try{ const ua=navigator.userAgent, ios=/iP(hone|od|ad)/.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1), saf=/^((?!chrome|chromium|android|crios|fxios|edg).)*safari/i.test(ua); if(ios||saf) document.documentElement.classList.add('wk'); }catch(e){}
 // طلب تخزين دائم (يقلل احتمال مسح المتصفح للبيانات تلقائيًا، خاصة في الجوال)
 try{ if(navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(()=>{}); }catch(e){}
