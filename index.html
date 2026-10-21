@@ -954,6 +954,9 @@ footer>.wrap>div{line-height:1.9;font-size:13.5px;flex:1 1 320px}
 .stu .x:hover{background:#fdf1ef}
 .noorpick{display:flex;flex-wrap:wrap;gap:8px 18px;margin:10px 0}
 .noorpick label{display:flex;gap:6px;align-items:center;font-weight:600}
+#ftText .credit{margin-top:6px;font-weight:700;color:var(--ink2)}
+#ftText .ver{display:inline-block;margin-top:4px;opacity:.75;font-size:12px}
+#ftText .ver a{color:inherit}
 }
 @media print{html.wk #print{zoom:.9;padding:0 12.4mm}}
 @media screen and (max-width:640px){
@@ -1174,7 +1177,7 @@ let DATA = GRDATA[G].subjects;
 let NAMES = [];
 const GNAME = ()=>GRADES.find(x=>x.id===G).name;
 const SECN = (x)=>(SECS.find(s=>s.id===(x||SEC))||{name:'—'}).name;
-const GSN = ()=>GNAME()+' / '+SECN();           // «الثالث المتوسط / أ»
+const GSN = ()=>GNAME()+(SECS.length?' / '+SECN():'');           // «الثالث المتوسط / أ»
 const TEACH = (s,x)=>SCHOOL.teacher||'—';
 function teachersAll(s){ // معلمو المادة في الصف كله مع شعبهم
   const m=new Map(); SECS.forEach(x=>{ const t=TEACH(s,x.id); if(!m.has(t)) m.set(t,[]); m.get(t).push(x.name); });
@@ -1395,7 +1398,6 @@ function buildNav(){
   nav.onclick = e=>{ const b=e.target.closest('button'); if(b) go(b.dataset.v); };
 }
 function go(v){
-  if(v!=='setup' && !SECS.length){ v='setup'; }
   cur.view = v;
   document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on', b.dataset.v===v));
   document.querySelectorAll('.view').forEach(x=>x.classList.remove('on'));
@@ -1427,7 +1429,7 @@ function renderHome(){
       <div class="sc-go">الدخول إلى المادة ←</div>
     </div>`;
   }).join('');
-  document.getElementById('homeMeta').textContent = `الصف ${GNAME()} · الشعبة ${SECN()} · ${AR(STUD.length)} طالبًا · ${SUBJ.map(s=>s.name+' '+AR(NC(s.id))).join(' · ')} بطاقة`;
+  document.getElementById('homeMeta').textContent = SECS.length ? `الصف ${GNAME()} · الشعبة ${SECN()} · ${AR(STUD.length)} طالبًا · ${SUBJ.map(s=>s.name+' '+AR(NC(s.id))).join(' · ')} بطاقة` : `الصف ${GNAME()} · ${AR(NC('arabic'))} بطاقة · الطباعة متاحة الآن، وإضافة الأسماء اختيارية`;
   pill();
 }
 
@@ -2059,7 +2061,7 @@ function doPrintCards(){
   const t=document.querySelector('input[name=pmt]:checked').value;
   let names=[];
   if(t==='blank'){ const k=Math.max(1,Math.min(200,+document.getElementById('pmCopies').value||1)); names=Array(k).fill(null); }
-  else if(t==='all') names=STUD.map(x=>x.name);
+  else if(t==='all'){ names=STUD.map(x=>x.name); if(!names.length) return toast('لا توجد أسماء طلاب بعد؛ اختر «نسخ فارغة» أو أضف الأسماء من «الإعداد»'); }
   else { names=STUD.filter(x=>['p','n'].includes(getR(s,c,1)[x.id])).map(x=>x.name); if(!names.length) return toast('لا يوجد طلاب لإعادة القياس في هذه البطاقة'); }
   closePM();
   const refl=document.querySelector('#pmKind button.on').dataset.k==='refl';
@@ -2266,7 +2268,7 @@ function restore(inp){
 let tt; function toast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('on'); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove('on'),2200); }
 
 /* ================= نسخة المعلم: لغتي الثالث المتوسط — كل البيانات على جهاز المعلم فقط ================= */
-const APPVER = 'ج';                  // إصدار نسخة المعلم (يظهر في التذييل)
+const APPVER = 'د';                  // إصدار نسخة المعلم (يظهر في التذييل)
 const SKEY = KEY+'-school';          // بيانات المعلم والمدرسة
 const RKEY = KEY+'-roster';          // الشعب والطلاب
 const SDEF = ()=>({name:'', region:'', principal:'', teacher:'', logo:'', secLabels:{}});
@@ -2297,10 +2299,10 @@ function applySchoolData(){
 }
 function saveSchool(){ writeJSON(SKEY, SCHOOL); }
 function applyBrand(){
-  const n=SCHOOL.name||'اسم المدرسة (من الإعداد)';
-  const e=document.getElementById('hdrSchool'); if(e) e.textContent=n;
+  const n=SCHOOL.name||'';
+  const e=document.getElementById('hdrSchool'); if(e) e.textContent=n||'نسخة المعلم';
   const t=document.getElementById('tbOrg'); if(t) t.textContent='المملكة العربية السعودية · وزارة التعليم'+(SCHOOL.region?' · '+SCHOOL.region:'');
-  const f=document.getElementById('ftText'); if(f) f.innerHTML=`<b>${esc(n)}</b>${SCHOOL.region?' · '+esc(SCHOOL.region):''}<br>${SCHOOL.teacher?'معلم المادة: '+esc(SCHOOL.teacher)+' · ':''}${SCHOOL.principal?'مدير المدرسة: '+esc(SCHOOL.principal)+' · ':''}الفصل الدراسي الأول ١٤٤٨هـ<br><span style="opacity:.7">نسخة المعلم · الإصدار ${APPVER}</span>`;
+  const f=document.getElementById('ftText'); if(f) f.innerHTML=`${n?`<b>${esc(n)}</b>${SCHOOL.region?' · '+esc(SCHOOL.region):''}<br>`:''}${SCHOOL.teacher?'معلم المادة: '+esc(SCHOOL.teacher)+' · ':''}${SCHOOL.principal?'مدير المدرسة: '+esc(SCHOOL.principal)+' · ':''}الفصل الدراسي الأول ١٤٤٨هـ<div class="credit">هذا العمل من إعداد معلمي اللغة العربية في متوسطة العباس بن عبد المطلب © ١٤٤٨هـ</div><span class="ver">نسخة المعلم · الإصدار ${APPVER} · <a href="#" onclick="forceUpdate();return false">تحديث الآن</a></span>`;
   ['hdrLogo','ftLogo'].forEach(id=>{ const el=document.getElementById(id); if(el) el.src=LOGO; });
   document.title='التقويم من أجل التعلم – لغتي الثالث المتوسط'+(SCHOOL.teacher?' – '+SCHOOL.teacher:'');
 }
@@ -2508,6 +2510,26 @@ function renderSetup(){
   </div>`;
 }
 
+/* جلب أحدث نسخة فورًا: يمسح النسخة المحفوظة للعمل بلا إنترنت (لا يمس الطلاب ولا الرصد) */
+async function forceUpdate(){
+  toast('جارٍ جلب أحدث نسخة…');
+  try{ if(navigator.serviceWorker){ const rs=await navigator.serviceWorker.getRegistrations(); await Promise.all(rs.map(r=>r.unregister())); } }catch(e){}
+  try{ if(window.caches){ const ks=await caches.keys(); await Promise.all(ks.map(k=>caches.delete(k))); } }catch(e){}
+  location.reload();
+}
+/* بلا شعب: يُخفى شريط الشعبة، وتظهر في الرئيسية دعوة اختيارية للإعداد */
+const _renderGradeBar = renderGradeBar;
+renderGradeBar = function(){ _renderGradeBar(); const w=document.querySelector('.gradebar-wrap'); if(w) w.style.display = SECS.length ? '' : 'none'; };
+const _renderHome = renderHome;
+renderHome = function(){
+  _renderHome();
+  let h=document.getElementById('homeHint');
+  if(!h){ h=document.createElement('div'); h.id='homeHint'; h.className='dgnote'; const v=document.getElementById('v-home'); v.insertBefore(h, v.firstChild); }
+  const need=[]; if(!SCHOOL.teacher||!SCHOOL.name) need.push('اسمك واسم المدرسة ليظهرا في المطبوعات'); if(!SECS.length) need.push('أسماء طلابك للطباعة بالأسماء والرصد والتحليل');
+  h.style.display = need.length ? '' : 'none';
+  h.innerHTML = need.length ? `<b>جاهز للطباعة الآن.</b> افتح «اللغة العربية» واطبع البطاقات الفارغة والأوراق ومفتاح الإجابة مباشرة. ويمكنك متى شئت إضافة ${need.join('، و')} من <a href="#" onclick="go('setup');return false">الإعداد</a>.` : '';
+};
+
 /* ---------- init ---------- */
 applySchoolData(); SEC=firstSec(G); applyGS(); load(); buildNav(); applyBrand(); document.getElementById('hdrMoe').src=MOE; document.getElementById('ftMoe').src=MOE;
 try{ const gg=JSON.parse(sessionStorage.getItem(KEY+'-grade')||'null'); if(gg&&GRDATA[gg.g]){ G=gg.g; if(SECS.some(x=>x.id===gg.x)) SEC=gg.x; applyGS(); } }catch(e){}
@@ -2515,7 +2537,7 @@ load(); renderGradeBar(); buildNav();
 let start={v:'home', tab:'cards'};
 try{ const n=JSON.parse(sessionStorage.getItem(KEY+'-nav')||'null'); if(n) start=n; }catch(e){}
 cur.tab = start.tab||'cards';
-go(SECS.length ? (['home','arabic','setup'].includes(start.v) ? start.v : 'home') : 'setup');
+go(['home','arabic','setup'].includes(start.v) ? start.v : 'home');
 </script>
 <script>document.addEventListener('click',function(e){var o=e.target.closest('.lc .oc');if(o&&o.querySelectorAll('.nfi').length>=3&&!e.target.closest('a,button'))o.classList.toggle('open');});</script>
 <script>(function(){var top=document.querySelector('header.top'),gw=document.querySelector('.gradebar-wrap'),nav=document.getElementById('nav');if(!top||!gw||!nav)return;var o=document.createElement('div');o.className='selwrap';var i=document.createElement('div');i.className='wrap selbar';i.appendChild(gw);i.appendChild(nav);o.appendChild(i);top.appendChild(o);})();</script>
