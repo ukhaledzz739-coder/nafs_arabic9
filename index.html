@@ -955,6 +955,7 @@ footer>.wrap>div{line-height:1.9;font-size:13.5px;flex:1 1 320px}
 .noorpick{display:flex;flex-wrap:wrap;gap:8px 18px;margin:10px 0}
 .noorpick label{display:flex;gap:6px;align-items:center;font-weight:600}
 }
+@media print{html.wk #print{zoom:.9;padding:0 12.4mm}}
 @media screen and (max-width:640px){
 .grid.g2{grid-template-columns:1fr}
 #sTabs{display:grid;grid-template-columns:1fr 1fr;overflow:visible}
@@ -2272,6 +2273,8 @@ let SCHOOL = SDEF();
 let ROSTER = {};   // {g9:{'1':['اسم',...], '2':[...]}}
 let EDSEC = null;  // الشعبة المفتوحة في شاشة الإعداد
 let NOORPICK = null; // شعب ملف نور بانتظار الاختيار
+// طباعة آيفون/آيباد وSafari: تضيف هوامشها الخاصة (نحو ١٤ مم) وتتجاهل هوامش الصفحة، فنصغّر المطبوع قليلًا ليبقى كل نموذج في صفحته
+try{ const ua=navigator.userAgent, ios=/iP(hone|od|ad)/.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1), saf=/^((?!chrome|chromium|android|crios|fxios|edg).)*safari/i.test(ua); if(ios||saf) document.documentElement.classList.add('wk'); }catch(e){}
 // طلب تخزين دائم (يقلل احتمال مسح المتصفح للبيانات تلقائيًا، خاصة في الجوال)
 try{ if(navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(()=>{}); }catch(e){}
 
