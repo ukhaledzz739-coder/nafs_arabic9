@@ -2266,6 +2266,7 @@ function restore(inp){
 let tt; function toast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('on'); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove('on'),2200); }
 
 /* ================= نسخة المعلم: لغتي الثالث المتوسط — كل البيانات على جهاز المعلم فقط ================= */
+const APPVER = 'ج';                  // إصدار نسخة المعلم (يظهر في التذييل)
 const SKEY = KEY+'-school';          // بيانات المعلم والمدرسة
 const RKEY = KEY+'-roster';          // الشعب والطلاب
 const SDEF = ()=>({name:'', region:'', principal:'', teacher:'', logo:'', secLabels:{}});
@@ -2299,7 +2300,7 @@ function applyBrand(){
   const n=SCHOOL.name||'اسم المدرسة (من الإعداد)';
   const e=document.getElementById('hdrSchool'); if(e) e.textContent=n;
   const t=document.getElementById('tbOrg'); if(t) t.textContent='المملكة العربية السعودية · وزارة التعليم'+(SCHOOL.region?' · '+SCHOOL.region:'');
-  const f=document.getElementById('ftText'); if(f) f.innerHTML=`<b>${esc(n)}</b>${SCHOOL.region?' · '+esc(SCHOOL.region):''}<br>${SCHOOL.teacher?'معلم المادة: '+esc(SCHOOL.teacher)+' · ':''}${SCHOOL.principal?'مدير المدرسة: '+esc(SCHOOL.principal)+' · ':''}الفصل الدراسي الأول ١٤٤٨هـ`;
+  const f=document.getElementById('ftText'); if(f) f.innerHTML=`<b>${esc(n)}</b>${SCHOOL.region?' · '+esc(SCHOOL.region):''}<br>${SCHOOL.teacher?'معلم المادة: '+esc(SCHOOL.teacher)+' · ':''}${SCHOOL.principal?'مدير المدرسة: '+esc(SCHOOL.principal)+' · ':''}الفصل الدراسي الأول ١٤٤٨هـ<br><span style="opacity:.7">نسخة المعلم · الإصدار ${APPVER}</span>`;
   ['hdrLogo','ftLogo'].forEach(id=>{ const el=document.getElementById(id); if(el) el.src=LOGO; });
   document.title='التقويم من أجل التعلم – لغتي الثالث المتوسط'+(SCHOOL.teacher?' – '+SCHOOL.teacher:'');
 }
