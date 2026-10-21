@@ -1,7 +1,7 @@
 // يعمل بلا إنترنت بعد أول فتح: يعرض النسخة المحفوظة فورًا، ويجلب التحديث في الخلفية لتظهر في الفتح التالي
-const C = 'nafs-ar9-v2';
+const C = 'nafs-ar9-v3';
 const ASSETS = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
-self.addEventListener('install', e => { e.waitUntil(caches.open(C).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting())); });
+self.addEventListener('install', e => { e.waitUntil(caches.open(C).then(c => c.addAll(ASSETS.map(u => new Request(u, {cache: 'reload'})))).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== C).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
 self.addEventListener('fetch', e => {
   const req = e.request;
@@ -9,7 +9,7 @@ self.addEventListener('fetch', e => {
   e.respondWith(caches.open(C).then(async c => {
     const key = req.mode === 'navigate' ? './index.html' : req;
     const hit = await c.match(key, {ignoreSearch: true});
-    const net = fetch(req).then(r => { if (r && r.ok) c.put(key, r.clone()); return r; }).catch(() => null);
+    const net = fetch(req.url, {cache: 'no-cache'}).then(r => { if (r && r.ok) c.put(key, r.clone()); return r; }).catch(() => null);
     if (hit) { e.waitUntil(net); return hit; }
     return (await net) || (await c.match('./index.html'));
   }));
